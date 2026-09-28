@@ -29,13 +29,15 @@ const App = () => {
       number: newPhoneNumber
     }
 
-    if (persons.find(p => p.name === newName)) {
+    const person = persons.find(p => p.name === newName)
+
+    if (person) {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
-        const id = persons.find(p => p.name === newName).id
+        const id = person.id
         personService
           .update(id, personObject)
           .then(returnedPerson => {
-            setPersons(persons.concat(returnedPerson))
+            setPersons(persons.map(p => p.id === returnedPerson.id ? returnedPerson : p))
 
           })
       }
@@ -57,8 +59,7 @@ const App = () => {
       personService
         .eliminate(person.id)
         .then(() => {
-          const copy = persons
-          const filtered = copy.filter(p => p.id !== person.id)
+          const filtered = persons.filter(p => p.id !== person.id)
           setPersons(filtered)
         })
     } else {
