@@ -3,12 +3,15 @@ import Filter from './components/Filter'
 import Form from './components/Form'
 import Numbers from './components/Numbers'
 import personService from './services/personService'
+import Notification from './components/Notificacion'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newPhoneNumber, setNewPhoneNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -38,7 +41,11 @@ const App = () => {
           .update(id, personObject)
           .then(returnedPerson => {
             setPersons(persons.map(p => p.id === returnedPerson.id ? returnedPerson : p))
-
+            setSuccessMessage(`Edited ${returnedPerson.name}`)
+          })
+          .catch(() => {
+            setErrorMessage(`Information of ${newName} has already been removed from the server`)
+            setPersons(persons.filter(p => p.id !== id))
           })
       }
     } else {
@@ -46,11 +53,16 @@ const App = () => {
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setSuccessMessage(`Added ${returnedPerson.name}`)
         })
     }
     
     setNewName('')
     setNewPhoneNumber('')
+    setTimeout(() => {
+              setSuccessMessage(null)
+              setErrorMessage(null)
+            }, 5000)
   }
 
   const handleDeleteName = (person) => {
@@ -81,6 +93,9 @@ const App = () => {
 
   return (
     <div>
+      <h1>Phonebook</h1>
+      <Notification message={successMessage} type={'success'}/>
+      <Notification message={errorMessage} type={'error'}/>
       <Filter filVal={filter} onChange={handleFilterChange} />
       <Form newName={newName} handleNameChange={handleNameChange} newPhoneNumber={newPhoneNumber} handlePhoneNumberChange={handlePhoneNumberChange} addName={addName} />
       <Numbers personsToShow={personsToShow} handleDelete={handleDeleteName} />

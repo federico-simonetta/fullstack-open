@@ -1,17 +1,10 @@
-
-
-
-const Filter = ({filVal, onChange}) => {
+const Filter = ({ filVal, onChange }) => {
 
     return (
         <div>
-            <h1>Phonebook</h1>
-            <div>
-                filter shown with <input value={filVal} onChange={onChange} />
-            </div>
+            filter shown with <input value={filVal} onChange={onChange} />
         </div>
     )
 }
-
 
 export default Filter;
